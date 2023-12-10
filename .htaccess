@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>  
+    RewriteEngine On
+    Options -Indexes
+
+    # proc/self/environ? noway!
+    RewriteCond %{QUERY_STRING} proc/self/environ [OR]
+    
+    # Block out any script trying to set a mosConfig value through the URL
+    RewriteCond %{QUERY_STRING} mosConfig_[a-zA-Z_]{1,21}(=|\%3D) [OR]
+    
+    # Block out any script trying to base64_encode crap to send via URL
+    RewriteCond %{QUERY_STRING} base64_encode.*(.*) [OR]
+    
+    # Block out any script that includes a
+
+    RewriteCond %{HTTPS} !on
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule (.*) $1.php [NC,L]
+
+    ErrorDocument 404 *
+    ErrorDocument 500 *
+
+</IfModule>
