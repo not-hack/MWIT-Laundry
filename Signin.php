@@ -2,10 +2,8 @@
 session_start();
 include("server/connection/connectionDB.php");
 
-$web_head = "Sign In";
-
 if (isset($_POST['login'])) {
-    $userID = $_POST['userID'];
+    $userID = strtolower($_POST['userID']);
     $password = sha1(md5($_POST['password']));
     $stmt = $connection->prepare("SELECT `userID`, `password`, `ID`, `class` FROM `userdata` WHERE `userID` = ? AND `password` = ?");
 
@@ -15,13 +13,13 @@ if (isset($_POST['login'])) {
 
     $result = $stmt->fetch();
     $_SESSION['ID'] = $ID;
-    $_SESSION['Class'] = $Class;
+    $_SESSION['class'] = $Class;
 
     if ($result) {
         if ($Class == 'ADMIN') {
 
         } else if ($Class == 'USER') {
-
+            header("Location: client/main");
         } else {
             $err = 'Error';
         }
@@ -31,7 +29,7 @@ if (isset($_POST['login'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
@@ -104,7 +102,8 @@ if (isset($_POST['login'])) {
                 </div>
             </div>
             <div class="form-floating mb-2 has-validation">
-                <input type="password" name="password" id="password" class="form-control rounded-0" placeholder="Password" required>
+                <input type="password" name="password" id="password" class="form-control rounded-0"
+                    placeholder="Password" required>
                 <label for="password">Password</label>
                 <div class="invalid-feedback">
                     <span class="text-danger p-1">Please enter your Password.</span>
